@@ -29,7 +29,7 @@ export function PlanGenerator({
   onGenerated,
 }: {
   memberId: string
-  gymId: string
+  gymId: string | null
   equipment: { name: string; category: string; quantity: number }[]
   onGenerated: (plan: any) => void
 }) {
@@ -51,7 +51,7 @@ export function PlanGenerator({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           memberId,
-          gymId,
+          gymId: gymId || null,
           level,
           goal,
           daysPerWeek,

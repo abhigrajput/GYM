@@ -24,11 +24,12 @@ export default async function OwnerLayout({ children }: { children: ReactNode })
     { label: "Analytics", href: "/owner/analytics", icon: "chart" as const },
     { label: "Attendance", href: "/owner/attendance", icon: "calendar" as const },
     { label: "Schedule", href: "/owner/schedule", icon: "calendar" as const },
+    { label: "Billing", href: "/owner/billing", icon: "chart" as const },
     { label: "Settings", href: "/owner/settings", icon: "settings" as const },
   ]
 
   return (
-    <div className="min-h-screen bg-[#07090F] text-[#F1F5F9] md:flex">
+    <div className="mesh-bg min-h-screen text-[var(--text-primary)] md:flex">
       <Sidebar navItems={ownerNav} role="owner" name={profile?.full_name} />
       <main className="flex-1 pb-20 md:pb-0">{children}</main>
       <BottomNav

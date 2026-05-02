@@ -2,18 +2,20 @@
 
 import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Building2, UserRound } from "lucide-react"
+import { Building2, UserRound, Dumbbell } from "lucide-react"
 import { toast } from "sonner"
+import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { GlassCard } from "@/components/ui/glass-card"
+import { GlassInput } from "@/components/ui/glass-input"
+import { GradientButton } from "@/components/ui/gradient-button"
+import { cn } from "@/lib/utils"
 
 type Role = "member" | "owner"
 
 export default function SignupClient() {
   const router = useRouter()
-  const [step, setStep] = useState<1 | 2>(1)
+  const [step, setStep] = useState<1 | 2 | 3>(1)
   const [role, setRole] = useState<Role>("member")
   const [loading, setLoading] = useState(false)
 
@@ -22,16 +24,35 @@ export default function SignupClient() {
   const [password, setPassword] = useState("")
   const [phone, setPhone] = useState("")
   const [city, setCity] = useState("")
+  const [language, setLanguage] = useState("en")
+
   const [age, setAge] = useState("")
   const [bodyWeight, setBodyWeight] = useState("")
   const [height, setHeight] = useState("")
   const [fitnessGoal, setFitnessGoal] = useState("muscle_gain")
   const [daysPerWeek, setDaysPerWeek] = useState("4")
+
   const [gymName, setGymName] = useState("")
   const [gymAddress, setGymAddress] = useState("")
   const [monthlyFee, setMonthlyFee] = useState("500")
+  const [whatsapp, setWhatsapp] = useState("")
 
-  const stepTitle = useMemo(() => (step === 1 ? "Step 1: Role Select Karein" : "Step 2: Details Bharein"), [step])
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const stepTitle = useMemo(() => {
+    if (step === 1) return "Step 1 — Role"
+    if (step === 2) return "Step 2 — Details"
+    return "Step 3 — Confirm"
+  }, [step])
+
+  const validateStep2 = () => {
+    const e: Record<string, string> = {}
+    if (fullName.length < 2) e.fullName = "Name zaroori hai"
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Valid email"
+    if (password.length < 8) e.password = "Min 8 chars"
+    setErrors(e)
+    return Object.keys(e).length === 0
+  }
 
   const onSubmit = async () => {
     setLoading(true)
@@ -79,19 +100,35 @@ export default function SignupClient() {
         return
       }
 
-      const { error: gymError } = await supabase.from("gyms").insert({
-        chain_id: chainData.id,
-        owner_id: userId,
-        name: gymName,
-        address: gymAddress,
-        city,
-        monthly_fee: Number(monthlyFee) || 500,
-      })
+      const { data: gymRow, error: gymError } = await supabase
+        .from("gyms")
+        .insert({
+          chain_id: chainData.id,
+          owner_id: userId,
+          name: gymName,
+          address: gymAddress,
+          city,
+          phone: whatsapp || phone,
+          whatsapp: whatsapp || phone,
+          monthly_fee: Number(monthlyFee) || 500,
+        })
+        .select("id, gym_code")
+        .single()
 
       if (gymError) {
         toast.error(gymError.message)
         setLoading(false)
         return
+      }
+
+      const { error: subErr } = await supabase.from("subscriptions").insert({
+        gym_id: gymRow.id,
+        plan: "pro",
+        amount: 2000,
+        status: "active",
+      })
+      if (subErr) {
+        toast.message("Subscription row skipped — run DB migration.", { duration: 4000 })
       }
 
       router.replace("/owner/dashboard")
@@ -106,6 +143,7 @@ export default function SignupClient() {
       height: Number(height) || null,
       goal: fitnessGoal,
       days_per_week: Number(daysPerWeek) || 4,
+      language_preference: language,
     })
 
     if (memberError) {
@@ -114,67 +152,95 @@ export default function SignupClient() {
       return
     }
 
-    toast.success("Ab apne gym owner se join karo ya gym code daalo")
+    toast.success("Account ready — ab gym join karo dashboard se")
     router.replace("/member/dashboard")
     setLoading(false)
   }
 
   return (
-    <Card className="border-[#1A2332] bg-[#0F1520]">
-      <h1 className="text-xl font-bold">{stepTitle}</h1>
-      <p className="mt-1 text-sm text-[#94A3B8]">IronIQ onboarding in 2 quick steps.</p>
+    <GlassCard className="p-6 sm:p-8">
+      <div className="mb-6 flex items-center gap-2">
+        <Dumbbell className="h-6 w-6 text-cyan-400" />
+        <div>
+          <h1 className="font-heading text-xl font-bold text-white">{stepTitle}</h1>
+          <p className="text-xs text-white/45">IronIQ v2 onboarding</p>
+        </div>
+      </div>
 
       {step === 1 ? (
-        <div className="mt-5 space-y-4">
+        <div className="space-y-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <button
-              className={`rounded-2xl border p-4 text-left transition ${
-                role === "member" ? "border-[#0ECFB0] bg-[#0ECFB0]/5" : "border-[#1A2332]"
-              }`}
+              type="button"
+              className={cn(
+                "rounded-2xl border p-4 text-left transition",
+                role === "member" ? "border-violet-500/50 bg-violet-500/10 glow-purple" : "border-white/10 bg-white/[0.03]"
+              )}
               onClick={() => setRole("member")}
             >
-              <UserRound className="mb-2 h-6 w-6 text-[#0ECFB0]" />
-              <h2 className="font-semibold">Main Member Hoon</h2>
-              <p className="mt-1 text-xs text-[#94A3B8]">Workout plans, progress tracking, AI coach</p>
+              <UserRound className="mb-2 h-6 w-6 text-violet-300" />
+              <h2 className="font-semibold text-white">Member Hoon</h2>
+              <p className="mt-1 text-xs text-white/45">Free • AI Coach • Progress Tracking</p>
             </button>
             <button
-              className={`rounded-2xl border p-4 text-left transition ${
-                role === "owner" ? "border-[#0ECFB0] bg-[#0ECFB0]/5" : "border-[#1A2332]"
-              }`}
+              type="button"
+              className={cn(
+                "rounded-2xl border p-4 text-left transition",
+                role === "owner" ? "border-cyan-500/50 bg-cyan-500/10 glow-cyan" : "border-white/10 bg-white/[0.03]"
+              )}
               onClick={() => setRole("owner")}
             >
-              <Building2 className="mb-2 h-6 w-6 text-[#0ECFB0]" />
-              <h2 className="font-semibold">Main Gym Owner Hoon</h2>
-              <p className="mt-1 text-xs text-[#94A3B8]">Manage members, equipment, analytics</p>
+              <Building2 className="mb-2 h-6 w-6 text-cyan-300" />
+              <h2 className="font-semibold text-white">Gym Owner Hoon</h2>
+              <p className="mt-1 text-xs text-white/45">₹2,000/mo • Manage Members • Analytics</p>
             </button>
           </div>
-          <Button className="w-full" onClick={() => setStep(2)}>
+          <GradientButton className="w-full" onClick={() => setStep(2)}>
             Aage Badho
-          </Button>
+          </GradientButton>
         </div>
-      ) : (
-        <div className="mt-5 space-y-3">
-          <Input label="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Priya Kulkarni" />
-          <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="priya@example.com" />
-          <Input label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Strong password" />
-          <Input label="Phone (+91)" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 9876543210" />
-          <Input label="City" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Nagpur" />
+      ) : step === 2 ? (
+        <div className="space-y-3">
+          <GlassInput label="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} error={errors.fullName} />
+          <GlassInput
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={errors.email}
+          />
+          <GlassInput
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={errors.password}
+          />
+          <GlassInput label="Phone (+91)" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <GlassInput label="City" value={city} onChange={(e) => setCity(e.target.value)} />
+          <div>
+            <label className="text-sm text-white/55">Language</label>
+            <select
+              className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+            >
+              <option value="en">English</option>
+              <option value="hi">हिंदी</option>
+              <option value="kn">ಕನ್ನಡ</option>
+              <option value="mr">मराठी</option>
+            </select>
+          </div>
 
           {role === "member" ? (
             <>
-              <Input label="Age" type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="24" />
-              <Input
-                label="Body Weight (kg)"
-                type="number"
-                value={bodyWeight}
-                onChange={(e) => setBodyWeight(e.target.value)}
-                placeholder="68"
-              />
-              <Input label="Height (cm)" type="number" value={height} onChange={(e) => setHeight(e.target.value)} placeholder="172" />
+              <GlassInput label="Age" type="number" value={age} onChange={(e) => setAge(e.target.value)} />
+              <GlassInput label="Weight (kg)" type="number" value={bodyWeight} onChange={(e) => setBodyWeight(e.target.value)} />
+              <GlassInput label="Height (cm)" type="number" value={height} onChange={(e) => setHeight(e.target.value)} />
               <div>
-                <label className="mb-2 block text-sm text-[#94A3B8]">Fitness Goal</label>
+                <label className="text-sm text-white/55">Goal</label>
                 <select
-                  className="w-full rounded-xl border border-[#1A2332] bg-[#0F1520] px-4 py-3 text-sm text-white focus:border-[#0ECFB0] focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white"
                   value={fitnessGoal}
                   onChange={(e) => setFitnessGoal(e.target.value)}
                 >
@@ -186,9 +252,9 @@ export default function SignupClient() {
                 </select>
               </div>
               <div>
-                <label className="mb-2 block text-sm text-[#94A3B8]">Days per week</label>
+                <label className="text-sm text-white/55">Days / week</label>
                 <select
-                  className="w-full rounded-xl border border-[#1A2332] bg-[#0F1520] px-4 py-3 text-sm text-white focus:border-[#0ECFB0] focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white"
                   value={daysPerWeek}
                   onChange={(e) => setDaysPerWeek(e.target.value)}
                 >
@@ -201,33 +267,62 @@ export default function SignupClient() {
             </>
           ) : (
             <>
-              <Input label="Gym Name" value={gymName} onChange={(e) => setGymName(e.target.value)} placeholder="IronIQ Fitness Hubli" />
-              <Input
-                label="Gym Address"
-                value={gymAddress}
-                onChange={(e) => setGymAddress(e.target.value)}
-                placeholder="Vidyanagar Main Road"
-              />
-              <Input
-                label="Monthly Fee (₹)"
-                type="number"
-                value={monthlyFee}
-                onChange={(e) => setMonthlyFee(e.target.value)}
-                placeholder="799"
-              />
+              <GlassInput label="Gym Name" value={gymName} onChange={(e) => setGymName(e.target.value)} />
+              <GlassInput label="Address" value={gymAddress} onChange={(e) => setGymAddress(e.target.value)} />
+              <GlassInput label="WhatsApp" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
+              <GlassInput label="Monthly fee (₹)" type="number" value={monthlyFee} onChange={(e) => setMonthlyFee(e.target.value)} />
             </>
           )}
 
-          <div className="flex gap-2">
-            <Button variant="ghost" className="flex-1" onClick={() => setStep(1)}>
+          <div className="flex gap-2 pt-2">
+            <GradientButton variant="ghost" className="flex-1" onClick={() => setStep(1)}>
               Back
-            </Button>
-            <Button className="flex-1" onClick={onSubmit} disabled={loading}>
-              {loading ? "Creating..." : "Create Account"}
-            </Button>
+            </GradientButton>
+            <GradientButton
+              className="flex-1"
+              onClick={() => {
+                if (validateStep2()) setStep(3)
+              }}
+            >
+              Next
+            </GradientButton>
           </div>
         </div>
+      ) : (
+        <div className="space-y-4">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/80">
+            <p>
+              <strong className="text-white">{fullName}</strong> · {email}
+            </p>
+            <p className="mt-2">
+              {role === "member" ? `Member · ${city} · ${language}` : `Owner · ${gymName} · ${city}`}
+            </p>
+            <p className="mt-3 text-white/50">Sab sahi hai?</p>
+          </motion.div>
+
+          {loading ? (
+            <div className="flex flex-col items-center gap-3 py-8">
+              <motion.div
+                animate={{ scale: [1, 1.08, 1] }}
+                transition={{ repeat: Infinity, duration: 1.2 }}
+                className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-cyan-500"
+              >
+                <Dumbbell className="h-7 w-7 text-white" />
+              </motion.div>
+              <p className="text-sm text-white/55">Creating your account...</p>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <GradientButton variant="ghost" className="flex-1" onClick={() => setStep(2)}>
+                Edit
+              </GradientButton>
+              <GradientButton className="flex-1" onClick={() => void onSubmit()} loading={loading}>
+                Account Banao
+              </GradientButton>
+            </div>
+          )}
+        </div>
       )}
-    </Card>
+    </GlassCard>
   )
 }

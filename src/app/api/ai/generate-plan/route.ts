@@ -76,7 +76,7 @@ export async function POST(request: Request) {
       .from("workout_plans")
       .insert({
         member_id: memberId,
-        gym_id: gymId,
+        gym_id: gymId ?? null,
         level,
         goal,
         plan_name: plan.plan_name,

@@ -1,86 +1,124 @@
 import { createServerClient } from "@supabase/ssr"
-import { NextResponse, type NextRequest } from "next/server"
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 
-const PUBLIC_ROUTES = new Set([
+const PUBLIC_PATHS = [
   "/",
   "/login",
   "/signup",
-  "/manifest.json",
-  "/sw.js",
-  "/api/health",
   "/privacy",
   "/terms",
-  "/favicon.ico",
-])
+  "/pricing",
+  "/about",
+  "/api/health",
+  "/api/well-known/assetlinks",
+]
 
-function isPublicAsset(pathname: string) {
-  return (
-    pathname.startsWith("/icons/") ||
-    pathname.startsWith("/_next/") ||
-    pathname === "/manifest.json" ||
-    pathname === "/sw.js" ||
-    pathname === "/favicon.ico"
-  )
-}
+const STATIC_EXTENSIONS = [
+  ".png",
+  ".jpg",
+  ".jpeg",
+  ".gif",
+  ".svg",
+  ".ico",
+  ".webp",
+  ".woff",
+  ".woff2",
+  ".ttf",
+  ".json",
+  ".txt",
+  ".xml",
+  ".mp4",
+  ".webm",
+  ".css",
+  ".js",
+]
 
-function isProtectedRoute(pathname: string) {
-  return pathname.startsWith("/member") || pathname.startsWith("/owner")
-}
-
-function dashboardFromRole(role: string | null | undefined) {
-  if (role === "owner") return "/owner/dashboard"
-  return "/member/dashboard"
+function isPublicPath(pathname: string) {
+  if (PUBLIC_PATHS.includes(pathname)) return true
+  if (pathname.startsWith("/join/")) return true
+  return false
 }
 
 export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname
+  const { pathname } = request.nextUrl
 
-  // Never run auth for static assets & public pages (matcher should skip these too)
-  if (isPublicAsset(pathname) || PUBLIC_ROUTES.has(pathname)) {
+  // Always allow static files and Next.js internals
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/icons") ||
+    pathname.startsWith("/images") ||
+    pathname === "/manifest.json" ||
+    pathname === "/sw.js" ||
+    pathname === "/favicon.ico" ||
+    pathname === "/robots.txt" ||
+    pathname === "/sitemap.xml" ||
+    STATIC_EXTENSIONS.some((ext) => pathname.endsWith(ext)) ||
+    isPublicPath(pathname) ||
+    pathname.startsWith("/api/health") ||
+    pathname.startsWith("/api/well-known")
+  ) {
     return NextResponse.next()
   }
 
-  const response = NextResponse.next({ request })
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  if (!supabaseUrl || !supabaseAnonKey || !/^https?:\/\//.test(supabaseUrl)) {
-    return response
-  }
-
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll()
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => {
-          request.cookies.set(name, value)
-          response.cookies.set(name, value, options)
-        })
-      },
-    },
+  const initialResponse = NextResponse.next({
+    request: { headers: request.headers },
   })
+  let response = initialResponse
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  try {
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll()
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+            response = NextResponse.next({ request: { headers: request.headers } })
+            cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options))
+          },
+        },
+      }
+    )
 
-  if (isProtectedRoute(pathname) && !user) {
-    return NextResponse.redirect(new URL("/login", request.url))
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    // Redirect unauthenticated users from protected routes
+    if (!user) {
+      if (pathname.startsWith("/member") || pathname.startsWith("/owner") || pathname.startsWith("/admin")) {
+        return NextResponse.redirect(new URL("/login", request.url))
+      }
+      return response
+    }
+
+    // Redirect authenticated users away from auth pages
+    if (pathname === "/login" || pathname === "/signup") {
+      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+
+      if (profile?.role === "owner") return NextResponse.redirect(new URL("/owner/dashboard", request.url))
+      if (profile?.role === "admin") return NextResponse.redirect(new URL("/admin/dashboard", request.url))
+      return NextResponse.redirect(new URL("/member/dashboard", request.url))
+    }
+
+    // Admin route protection
+    if (pathname.startsWith("/admin")) {
+      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+      if (profile?.role !== "admin") {
+        return NextResponse.redirect(new URL("/member/dashboard", request.url))
+      }
+    }
+
+    return response
+  } catch {
+    return initialResponse
   }
-
-  if ((pathname === "/login" || pathname === "/signup") && user) {
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle()
-
-    return NextResponse.redirect(new URL(dashboardFromRole(profile?.role), request.url))
-  }
-
-  return response
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/|favicon\\.ico|manifest\\.json|icons|sw\\.js|api/health|privacy|terms).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 }

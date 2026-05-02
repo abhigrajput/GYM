@@ -1,26 +1,14 @@
 import type { ReactNode } from "react"
-import { Dumbbell } from "lucide-react"
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#07090F] px-4 py-10">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(14,207,176,0.12),_transparent_40%)]" />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-20"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(148,163,184,0.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.15) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-        }}
-      />
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+      <div className="pointer-events-none absolute inset-0 mesh-bg" />
+      <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 animate-orb rounded-full bg-violet-600/35 blur-[100px]" />
+      <div className="pointer-events-none absolute right-0 top-32 h-80 w-80 animate-orb-delay rounded-full bg-cyan-500/30 blur-[110px]" />
+      <div className="pointer-events-none absolute bottom-10 left-1/2 h-64 w-64 animate-orb-delay-2 rounded-full bg-pink-500/25 blur-[90px]" />
 
-      <div className="relative z-10 w-full max-w-md">
-        <div className="mb-6 flex items-center justify-center gap-2">
-          <Dumbbell className="h-5 w-5 text-[#0ECFB0]" />
-          <span className="text-xl font-bold text-[#0ECFB0]">IronIQ</span>
-        </div>
-        {children}
-      </div>
+      <div className="relative z-10 w-full max-w-md">{children}</div>
     </div>
   )
 }

@@ -12,6 +12,7 @@ type AuthContextValue = {
   loading: boolean
   isOwner: () => boolean
   isMember: () => boolean
+  isAdmin: () => boolean
 }
 
 export const AuthContext = createContext<AuthContextValue>({
@@ -22,6 +23,7 @@ export const AuthContext = createContext<AuthContextValue>({
   loading: true,
   isOwner: () => false,
   isMember: () => false,
+  isAdmin: () => false,
 })
 
 export function useAuthContext() {

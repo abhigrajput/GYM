@@ -16,18 +16,20 @@ export default async function MemberLayout({ children }: { children: ReactNode }
 
   const { data: profile } = await supabase.from("profiles").select("full_name,role").eq("id", user.id).maybeSingle()
   if (profile?.role === "owner") redirect("/owner/dashboard")
+  if (profile?.role === "admin") redirect("/admin/dashboard")
 
   const memberNav = [
     { label: "Dashboard", href: "/member/dashboard", icon: "home" as const },
-    { label: "My Workout", href: "/member/workout", icon: "dumbbell" as const },
+    { label: "Workout", href: "/member/workout", icon: "dumbbell" as const },
     { label: "Progress", href: "/member/progress", icon: "target" as const },
     { label: "Nutrition", href: "/member/nutrition", icon: "apple" as const },
     { label: "Leaderboard", href: "/member/leaderboard", icon: "trophy" as const },
+    { label: "QR Check-in", href: "/member/qr", icon: "qr" as const },
     { label: "Settings", href: "/member/settings", icon: "settings" as const },
   ]
 
   return (
-    <div className="min-h-screen bg-[#07090F] text-[#F1F5F9] md:flex">
+    <div className="mesh-bg min-h-screen text-[var(--text-primary)] md:flex">
       <Sidebar navItems={memberNav} role="member" name={profile?.full_name} />
       <main className="flex-1 pb-20 md:pb-0">{children}</main>
       <BottomNav

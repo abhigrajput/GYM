@@ -1,4 +1,4 @@
-export type UserRole = "member" | "owner" | "trainer"
+export type UserRole = "member" | "owner" | "trainer" | "admin"
 export type FitnessGoal = "fat_loss" | "muscle_gain" | "strength" | "endurance" | "aesthetics"
 export type FitnessLevel = "beginner" | "intermediate" | "advanced"
 export type MembershipStatus = "active" | "expired" | "paused" | "trial"
@@ -23,6 +23,8 @@ export type GymChain = {
   created_at: string | null
 }
 
+export type GymSubscriptionStatus = "trial" | "active" | "expired"
+
 export type Gym = {
   id: string
   chain_id: string | null
@@ -38,6 +40,11 @@ export type Gym = {
   ai_optimized_badge: boolean | null
   created_at: string | null
   updated_at: string | null
+  gym_code?: string | null
+  subscription_status?: GymSubscriptionStatus | string | null
+  subscription_plan?: string | null
+  trial_ends_at?: string | null
+  razorpay_subscription_id?: string | null
 }
 
 export type Equipment = {
@@ -50,6 +57,9 @@ export type Equipment = {
   notes: string | null
   created_at: string | null
 }
+
+export type WorkoutEnvironment = "gym" | "home" | "outdoor" | "any"
+export type LanguagePreference = "en" | "hi" | "kn" | "mr"
 
 export type Member = {
   id: string
@@ -73,6 +83,9 @@ export type Member = {
   last_workout_date: string | null
   created_at: string | null
   updated_at: string | null
+  workout_environment?: WorkoutEnvironment | string | null
+  home_equipment?: string[] | null
+  language_preference?: LanguagePreference | string | null
 }
 
 export type WorkoutPlanJSON = {

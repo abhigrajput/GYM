@@ -38,7 +38,10 @@ export function Providers({ children }: { children: ReactNode }) {
         .maybeSingle()
       setProfile((currentProfile as Profile | null) ?? null)
 
-      if (currentProfile?.role === "member") {
+      if (currentProfile?.role === "admin") {
+        setMember(null)
+        setOwnerGymId(null)
+      } else if (currentProfile?.role === "member") {
         const { data: currentMember } = await supabase
           .from("members")
           .select("*")
@@ -82,6 +85,7 @@ export function Providers({ children }: { children: ReactNode }) {
       loading,
       isOwner: () => profile?.role === "owner",
       isMember: () => profile?.role === "member",
+      isAdmin: () => profile?.role === "admin",
     }),
     [user, profile, member, ownerGymId, loading]
   )

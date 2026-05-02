@@ -19,7 +19,7 @@ export const EquipmentScanSchema = z.object({
 
 export const GeneratePlanSchema = z.object({
   memberId: z.string().uuid(),
-  gymId: z.string().uuid(),
+  gymId: z.string().uuid().optional().nullable(),
   level: z.enum(["beginner", "intermediate", "advanced"]),
   goal: z.enum(["fat_loss", "muscle_gain", "strength", "endurance", "aesthetics"]),
   daysPerWeek: z.number().int().min(3).max(6),

@@ -22,14 +22,38 @@ export async function PATCH(request: Request, { params }: Context) {
     if (limited) return limited
     const { user, supabase } = await requireUser()
     if (!user) return secureJson({ error: "Unauthorized" }, { status: 401 })
+    const { data: target } = await supabase
+      .from("members")
+      .select("profile_id, gym_id")
+      .eq("id", params.id)
+      .maybeSingle()
+    let allowed = target?.profile_id === user.id
+    if (!allowed && target?.gym_id) {
+      const { data: gym } = await supabase
+        .from("gyms")
+        .select("owner_id")
+        .eq("id", target.gym_id)
+        .maybeSingle()
+      allowed = gym?.owner_id === user.id
+    }
+    if (!allowed) {
+      return secureJson({ error: "Forbidden" }, { status: 403 })
+    }
     const body = await request.json()
+    const patch = {
+      membership_status: body.status,
+      expiry_date: body.expiry,
+      trainer_id: body.trainerId,
+      workout_environment: body.workout_environment,
+      home_equipment: body.home_equipment,
+      language_preference: body.language_preference,
+    }
+    const updates = Object.fromEntries(
+      Object.entries(patch).filter(([, v]) => v !== undefined && v !== null && v !== "")
+    )
     const { data, error } = await supabase
       .from("members")
-      .update({
-        membership_status: body.status,
-        expiry_date: body.expiry,
-        trainer_id: body.trainerId,
-      })
+      .update(updates)
       .eq("id", params.id)
       .select("*")
       .maybeSingle()
