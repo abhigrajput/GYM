@@ -1,0 +1,33 @@
+You are building IronIQ - an AI-powered gym management and coaching platform for India (Tier 2/3 cities).
+
+Stack: Next.js 14 App Router, TypeScript, Tailwind CSS, Supabase, Claude API, Razorpay, Vercel.
+
+Architecture Rules:
+- All Supabase and Claude API calls go in /app/api/ route handlers ONLY. Never call them from client components directly.
+- Use server components by default. Add "use client" only when needed for interactivity.
+- Database logic in /lib/db/. UI logic in /components/. Business logic in /lib/services/.
+- Each feature gets its own folder under /features/
+
+Design System:
+- Background: #07090F (near black)
+- Primary accent: #0ECFB0 (cyan-green)
+- Secondary: #1A2332 (dark navy)
+- Text primary: #F1F5F9
+- Text muted: #94A3B8
+- Font: Inter for body, Syne for headings
+- Dark theme ONLY. Mobile-first. Every component works at 375px.
+- No Lorem Ipsum. Use realistic Indian gym context in all placeholder text.
+- Names: Rahul, Priya, Arjun, Sneha. Cities: Dharwad, Nagpur, Hubli, Belgaum.
+
+India Rules:
+- All prices in ₹ INR
+- Phone: +91 format
+- Payments: Razorpay UPI/card
+- Language: English UI with Hinglish flavor in copy ("Bhai", "Kal", "Aaj")
+- Food: Indian meals only (dal, roti, paneer, eggs)
+
+AI Rules:
+- Always pass gym equipment list as context when generating workout plans
+- Always include user level (beginner/intermediate/advanced) in every AI call
+- Voice output in Hinglish: natural mix of Hindi words
+- Never generate exercises using equipment not in the gym inventory

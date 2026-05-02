@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="80" fill="#07090F"/>
+  <rect x="60" y="220" width="80" height="72" rx="16" fill="#0ECFB0"/>
+  <rect x="372" y="220" width="80" height="72" rx="16" fill="#0ECFB0"/>
+  <rect x="120" y="196" width="30" height="120" rx="10" fill="#0ECFB0"/>
+  <rect x="362" y="196" width="30" height="120" rx="10" fill="#0ECFB0"/>
+  <rect x="148" y="236" width="216" height="40" rx="10" fill="#0ECFB0"/>
+  <text x="256" y="380" font-family="Arial" font-weight="bold" font-size="72" fill="#0ECFB0" text-anchor="middle">IQ</text>
+</svg>
