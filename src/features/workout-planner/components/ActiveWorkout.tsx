@@ -18,6 +18,13 @@ type Exercise = {
   substitution?: string
 }
 
+type ExerciseLog = {
+  name: string
+  set_number: number
+  reps: number
+  weight: number
+}
+
 export function ActiveWorkout({ exercises, onEnd }: { exercises: Exercise[]; onEnd?: () => void }) {
   const [exerciseIndex, setExerciseIndex] = useState(0)
   const [setDone, setSetDone] = useState(0)
@@ -28,6 +35,7 @@ export function ActiveWorkout({ exercises, onEnd }: { exercises: Exercise[]; onE
   const [repsInput, setRepsInput] = useState("")
   const { isSpeaking } = useVoiceCoach()
   const memberId = "current"
+  const pendingLogsKey = `ironiq_pending_logs_${memberId}`
 
   const exercise = exercises[exerciseIndex]
   const progress = useMemo(() => ((exerciseIndex + 1) / Math.max(1, exercises.length)) * 100, [exerciseIndex, exercises.length])
@@ -46,19 +54,27 @@ export function ActiveWorkout({ exercises, onEnd }: { exercises: Exercise[]; onE
       })
     }, 1000)
 
+    const exerciseLog: ExerciseLog = {
+      name: exercise.name,
+      set_number: nextSet,
+      reps: Number(repsInput || 0) || 0,
+      weight: Number(weightInput || 0) || 0,
+    }
     const payload = {
       member_id: memberId,
-      measured_at: new Date().toISOString().slice(0, 10),
-      weight: Number(weightInput || 0) || null,
-      notes: `${exercise.name} set ${nextSet} reps ${repsInput || "-"}`,
+      plan_id: null,
+      workout_date: new Date().toISOString().split("T")[0],
+      exercises_json: { exercises: [exerciseLog] },
+      duration_minutes: 60,
+      completed: false,
+      mood: 3,
     }
     if (!navigator.onLine) {
-      const key = `ironiq_pending_logs_${memberId}`
-      const queue = JSON.parse(localStorage.getItem(key) || "[]")
+      const queue = JSON.parse(localStorage.getItem(pendingLogsKey) || "[]")
       queue.push(payload)
-      localStorage.setItem(key, JSON.stringify(queue))
+      localStorage.setItem(pendingLogsKey, JSON.stringify(queue))
     } else {
-      void fetch("/api/progress/measurements", {
+      void fetch("/api/workout-logs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -77,17 +93,16 @@ export function ActiveWorkout({ exercises, onEnd }: { exercises: Exercise[]; onE
   }
 
   const flushQueue = async () => {
-    const key = `ironiq_pending_logs_${memberId}`
-    const queue = JSON.parse(localStorage.getItem(key) || "[]")
+    const queue = JSON.parse(localStorage.getItem(pendingLogsKey) || "[]")
     if (!queue.length) return
     for (const item of queue) {
-      await fetch("/api/progress/measurements", {
+      await fetch("/api/workout-logs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(item),
       })
     }
-    localStorage.removeItem(key)
+    localStorage.removeItem(pendingLogsKey)
   }
 
   useEffect(() => {

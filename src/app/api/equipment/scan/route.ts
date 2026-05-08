@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic"
 
 import { anthropic, MODELS } from "@/lib/ai/claude"
 import { secureJson, enforceRateLimit, requireUser } from "@/lib/security/api"
+import { createServiceRoleClient } from "@/lib/db/connection-pool"
 
 type EquipmentItem = {
   name: string
@@ -17,8 +18,9 @@ export async function POST(request: Request) {
   try {
     const limited = enforceRateLimit(request, "/api/equipment/scan")
     if (limited) return limited
-    const { user } = await requireUser()
+    const { user, supabase } = await requireUser()
     if (!user) return secureJson({ error: "Unauthorized" }, { status: 401 })
+    const { data: member } = await supabase.from("members").select("gym_id").eq("profile_id", user.id).maybeSingle()
 
     const formData = await request.formData()
     const file = formData.get("image")
@@ -65,6 +67,20 @@ export async function POST(request: Request) {
 
     const parsed = JSON.parse(text) as EquipmentItem[]
     if (!Array.isArray(parsed)) throw new Error("Invalid response format")
+
+    try {
+      const tokensUsed = Number((message as any)?.usage?.input_tokens || 0) + Number((message as any)?.usage?.output_tokens || 0)
+      const db = createServiceRoleClient()
+      await db.from("ai_usage_logs").insert({
+        user_id: user.id,
+        gym_id: member?.gym_id ?? null,
+        feature: "equipment-scan",
+        tokens_used: tokensUsed,
+        model: "claude-sonnet-4-5",
+        cost_estimate: (tokensUsed / 1000) * 0.003,
+        created_at: new Date().toISOString(),
+      })
+    } catch {}
 
     return secureJson({ equipment: parsed })
   } catch {

@@ -82,7 +82,22 @@ export default function LoginClient() {
       setLoading(false)
       return
     }
-    router.replace("/member/dashboard")
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) {
+      router.replace("/member/dashboard")
+      setLoading(false)
+      return
+    }
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle()
+    const next =
+      profile?.role === "owner"
+        ? "/owner/dashboard"
+        : profile?.role === "admin"
+          ? "/admin/dashboard"
+          : "/member/dashboard"
+    router.replace(next)
     setLoading(false)
   }
 

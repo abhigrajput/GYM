@@ -4,6 +4,7 @@ import { anthropic, MODELS } from "@/lib/ai/claude"
 import { sanitizeText } from "@/lib/security/sanitize"
 import { GeneratePlanSchema } from "@/lib/security/validation"
 import { secureJson, enforceRateLimit, requireUser, validateBody } from "@/lib/security/api"
+import { createServiceRoleClient } from "@/lib/db/connection-pool"
 
 export async function POST(request: Request) {
   try {
@@ -71,6 +72,20 @@ export async function POST(request: Request) {
       .trim()
 
     const plan = JSON.parse(text)
+
+    try {
+      const tokensUsed = Number((message as any)?.usage?.input_tokens || 0) + Number((message as any)?.usage?.output_tokens || 0)
+      const db = createServiceRoleClient()
+      await db.from("ai_usage_logs").insert({
+        user_id: user.id,
+        gym_id: gymId ?? null,
+        feature: "generate-plan",
+        tokens_used: tokensUsed,
+        model: "claude-sonnet-4-5",
+        cost_estimate: (tokensUsed / 1000) * 0.003,
+        created_at: new Date().toISOString(),
+      })
+    } catch {}
 
     const { data: savedPlan, error } = await supabase
       .from("workout_plans")

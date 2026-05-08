@@ -18,6 +18,24 @@ export async function GET(request: Request) {
     const goal = searchParams.get("goal")
     if (!gymId) return secureJson({ error: "gymId required" }, { status: 400 })
 
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle()
+    const role = profile?.role
+    if (!role) return secureJson({ error: "Forbidden" }, { status: 403 })
+
+    if (role === "member") {
+      const { data: member } = await supabase.from("members").select("gym_id").eq("profile_id", user.id).maybeSingle()
+      if (!member?.gym_id || member.gym_id !== gymId) {
+        return secureJson({ error: "Forbidden" }, { status: 403 })
+      }
+    } else if (role === "owner") {
+      const { data: gym } = await supabase.from("gyms").select("id").eq("id", gymId).eq("owner_id", user.id).maybeSingle()
+      if (!gym?.id) {
+        return secureJson({ error: "Forbidden" }, { status: 403 })
+      }
+    } else if (role !== "admin") {
+      return secureJson({ error: "Forbidden" }, { status: 403 })
+    }
+
     let query = supabase.from("members").select("*").eq("gym_id", gymId)
     if (status && status !== "all") query = query.eq("membership_status", status)
     if (level) query = query.eq("current_level", level)

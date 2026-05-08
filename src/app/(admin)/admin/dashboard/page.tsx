@@ -1,5 +1,7 @@
 "use client"
 
+export const dynamic = "force-dynamic"
+
 import { useEffect, useState } from "react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { GradientButton } from "@/components/ui/gradient-button"
@@ -68,8 +70,16 @@ export default function AdminDashboardPage() {
         <StatCard title="Total gyms" value={Number(stats?.totalGyms ?? 0)} glow="cyan" />
         <StatCard title="AI calls today" value={Number(stats?.aiCallsToday ?? 0)} glow="pink" />
         <StatCard title="Est. API cost (₹)" value={Number(stats?.estimatedCostTodayINR ?? 0)} glow="purple" />
-        <StatCard title="MRR (₹)" value={Number(stats?.monthlyRevenueINR ?? 0)} glow="cyan" />
-        <StatCard title="MoM growth" value={`${stats?.momGrowthPercent ?? 0}%`} glow="pink" />
+        <StatCard title="MRR (₹)" value={Number(stats?.monthlyRevenueINR ?? 0) > 0 ? Number(stats?.monthlyRevenueINR ?? 0) : "No data yet"} glow="cyan" />
+        <StatCard
+          title="MoM growth"
+          value={
+            typeof stats?.momGrowthPercent === "number"
+              ? `${stats.momGrowthPercent}%`
+              : "No data yet"
+          }
+          glow="pink"
+        />
       </section>
 
       <GlassCard id="users" className="scroll-mt-24 p-6">

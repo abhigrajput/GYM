@@ -2,7 +2,6 @@ export const dynamic = "force-dynamic"
 
 import Razorpay from "razorpay"
 import { secureJson, enforceRateLimit, requireUser } from "@/lib/security/api"
-import { createClient } from "@/lib/supabase/server"
 
 export async function POST(request: Request) {
   try {
@@ -21,7 +20,7 @@ export async function POST(request: Request) {
       return secureJson({ error: "Forbidden" }, { status: 403 })
     }
 
-    const keyId = process.env.RAZORPAY_KEY_ID
+    const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID
     const keySecret = process.env.RAZORPAY_KEY_SECRET
     if (!keyId || !keySecret) {
       return secureJson({ error: "Billing not configured", paymentLink: null }, { status: 501 })

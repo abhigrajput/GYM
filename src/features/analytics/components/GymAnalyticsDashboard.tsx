@@ -21,6 +21,17 @@ export function GymAnalyticsDashboard({ gymId, initialData }: { gymId: string; i
   }, [gymId, trafficDate])
 
   const projected = useMemo(() => Math.round((data?.active_members || 0) * ((data?.revenue_this_month || 0) / Math.max(1, data?.active_members || 1)) * 1.08), [data])
+  const peakHourLabel = useMemo(() => {
+    const peak = (data?.peak_hours || []).reduce(
+      (best: { hour: number; avg_checkins: number } | null, row: { hour: number; avg_checkins: number }) =>
+        !best || row.avg_checkins > best.avg_checkins ? row : best,
+      null
+    )
+    if (!peak || peak.avg_checkins <= 0) return "No data yet"
+    const start = String(peak.hour).padStart(2, "0")
+    const end = String((peak.hour + 1) % 24).padStart(2, "0")
+    return `${start}:00-${end}:00`
+  }, [data?.peak_hours])
 
   return (
     <div className="space-y-4">
@@ -62,7 +73,10 @@ export function GymAnalyticsDashboard({ gymId, initialData }: { gymId: string; i
 
       {tab === "revenue" ? (
         <Card>
-          <div className="flex h-52 items-end gap-2">
+          {(data?.revenue_last_6_months || []).length === 0 ? (
+            <p className="text-sm text-[#94A3B8]">No data yet</p>
+          ) : (
+            <div className="flex h-52 items-end gap-2">
             {(data?.revenue_last_6_months || []).map((m: any, i: number) => (
               <div key={m.month} className="flex flex-1 flex-col items-center gap-1">
                 <div
@@ -73,8 +87,11 @@ export function GymAnalyticsDashboard({ gymId, initialData }: { gymId: string; i
                 <span className="text-[10px] text-[#94A3B8]">Rs {Number(m.amount).toLocaleString("en-IN")}</span>
               </div>
             ))}
-          </div>
-          <p className="mt-3 text-sm text-[#94A3B8]">Projected next month: Rs {projected.toLocaleString("en-IN")}</p>
+            </div>
+          )}
+          <p className="mt-3 text-sm text-[#94A3B8]">
+            {(data?.revenue_last_6_months || []).length === 0 ? "Projected next month: No data yet" : `Projected next month: Rs ${projected.toLocaleString("en-IN")}`}
+          </p>
         </Card>
       ) : null}
 
@@ -87,7 +104,7 @@ export function GymAnalyticsDashboard({ gymId, initialData }: { gymId: string; i
               return <div key={i} className="h-6 rounded" style={{ background: bg }} />
             })}
           </div>
-          <p className="mt-3 text-sm">Sabse busy time: Tuesday 6-7 PM</p>
+          <p className="mt-3 text-sm">Sabse busy time: {peakHourLabel}</p>
         </Card>
       ) : null}
 

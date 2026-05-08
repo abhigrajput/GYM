@@ -57,6 +57,29 @@ export async function GET(request: Request) {
       trial = activeG = expired = 0
     }
 
+    const now = new Date()
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+    const prevMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()
+    let momGrowthPercent: number | null = null
+    try {
+      const [{ data: current }, { data: previous }] = await Promise.all([
+        db.from("subscriptions").select("amount").eq("status", "active").gte("created_at", currentMonthStart),
+        db
+          .from("subscriptions")
+          .select("amount")
+          .eq("status", "active")
+          .gte("created_at", prevMonthStart)
+          .lt("created_at", currentMonthStart),
+      ])
+      const currentRev = (current || []).reduce((sum, s: { amount: number | null }) => sum + Number(s.amount || 0), 0)
+      const prevRev = (previous || []).reduce((sum, s: { amount: number | null }) => sum + Number(s.amount || 0), 0)
+      if (prevRev > 0) {
+        momGrowthPercent = Math.round(((currentRev - prevRev) / prevRev) * 100)
+      }
+    } catch {
+      momGrowthPercent = null
+    }
+
     return secureJson({
       totalUsers: userCount || 0,
       totalGyms: gymCount || 0,
@@ -64,7 +87,7 @@ export async function GET(request: Request) {
       aiCallsToday: aiToday || 0,
       estimatedCostTodayINR: Math.round(costToday * 83),
       monthlyRevenueINR: mrr,
-      momGrowthPercent: 12,
+      momGrowthPercent,
     })
   } catch {
     return secureJson({ error: "Stats failed" }, { status: 500 })

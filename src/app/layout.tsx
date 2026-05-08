@@ -4,6 +4,8 @@ import { Providers } from "@/components/providers"
 import { OfflineBanner } from "@/features/offline/components/OfflineBanner"
 import "./globals.css"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "IronIQ",
   description: "India Ka Pehla AI Gym Coach",

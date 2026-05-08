@@ -1,29 +1,3 @@
-const withPWA = require("next-pwa")({
-  dest: "public",
-  disable: process.env.NODE_ENV === "development",
-  register: true,
-  skipWaiting: true,
-  runtimeCaching: [
-    {
-      urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
-      handler: "NetworkFirst",
-      options: {
-        cacheName: "supabase-cache",
-        expiration: { maxEntries: 50, maxAgeSeconds: 24 * 60 * 60 },
-      },
-    },
-    {
-      urlPattern: /\/api\/equipment\/list.*/i,
-      handler: "StaleWhileRevalidate",
-      options: { cacheName: "equipment-cache" },
-    },
-    {
-      urlPattern: /\/api\/ai\/generate-plan/i,
-      handler: "NetworkOnly",
-    },
-  ],
-})
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -51,4 +25,4 @@ const nextConfig = {
   },
 }
 
-module.exports = withPWA(nextConfig)
+module.exports = nextConfig

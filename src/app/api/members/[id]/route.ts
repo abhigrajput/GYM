@@ -68,6 +68,18 @@ export async function DELETE(_: Request, { params }: Context) {
   try {
     const { user, supabase } = await requireUser()
     if (!user) return secureJson({ error: "Unauthorized" }, { status: 401 })
+    const { data: target } = await supabase.from("members").select("gym_id").eq("id", params.id).maybeSingle()
+    if (!target) return secureJson({ error: "Member not found" }, { status: 404 })
+
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle()
+    const role = profile?.role
+    let allowed = role === "admin"
+    if (!allowed && target.gym_id) {
+      const { data: gym } = await supabase.from("gyms").select("owner_id").eq("id", target.gym_id).maybeSingle()
+      allowed = gym?.owner_id === user.id
+    }
+    if (!allowed) return secureJson({ error: "Forbidden" }, { status: 403 })
+
     const { error } = await supabase.from("members").delete().eq("id", params.id)
     if (error) return secureJson({ error: "Failed to remove member" }, { status: 500 })
     return secureJson({ success: true })

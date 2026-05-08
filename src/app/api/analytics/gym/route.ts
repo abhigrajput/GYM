@@ -18,6 +18,7 @@ export async function GET(request: Request) {
     const { data: gym } = await supabase.from("gyms").select("*").eq("id", gymId).maybeSingle()
     const { data: attendance } = await supabase.from("attendance").select("*").eq("gym_id", gymId)
     const { data: equipment } = await supabase.from("equipment").select("*").eq("gym_id", gymId)
+    const { data: schedules } = await supabase.from("equipment_schedules").select("equipment_id").eq("gym_id", gymId)
 
     const total = members?.length || 0
     const active = (members || []).filter((m) => m.membership_status === "active").length
@@ -29,13 +30,7 @@ export async function GET(request: Request) {
     const avgStreak =
       total > 0 ? Math.round((members || []).reduce((sum, m) => sum + Number(m.streak_count || 0), 0) / total) : 0
 
-    const revenueLast6 = Array.from({ length: 6 }).map((_, i) => {
-      const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1)
-      return {
-        month: d.toLocaleString("en-IN", { month: "short" }),
-        amount: Math.round(revenue * (0.75 + i * 0.05)),
-      }
-    })
+    const revenueLast6: { month: string; amount: number }[] = []
 
     const hourMap = new Map<number, number>()
     ;(attendance || []).forEach((a) => {
@@ -44,9 +39,14 @@ export async function GET(request: Request) {
     })
     const peakHours = Array.from(hourMap.entries()).map(([hour, avg_checkins]) => ({ hour, avg_checkins }))
 
+    const scheduleCounts = new Map<string, number>()
+    ;(schedules || []).forEach((s) => {
+      if (!s.equipment_id) return
+      scheduleCounts.set(s.equipment_id, (scheduleCounts.get(s.equipment_id) || 0) + 1)
+    })
     const equipmentUsage = (equipment || []).map((e) => ({
       equipment_name: e.name,
-      usage_count: (attendance || []).length ? Math.floor((attendance!.length / Math.max(1, (equipment || []).length)) * (e.quantity || 1)) : 0,
+      usage_count: scheduleCounts.get(e.id) || 0,
     }))
 
     const dropoutRisk = (members || [])

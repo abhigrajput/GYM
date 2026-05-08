@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"
+
 export default function OwnerSchedulePage() {
   return (
     <div className="space-y-4 p-4 sm:p-6">
