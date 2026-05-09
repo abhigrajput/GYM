@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   2. If equipment for an exercise is unavailable, provide a substitution using available equipment
   3. For injuries: ${sanitizeText(injuries || "none")} — avoid all exercises that stress these areas
   4. Plan must be ${daysPerWeek} days per week
-  5. Each exercise must include a hinglish_tip (coaching cue in Hinglish, max 15 words, e.g. 'Bhai back straight rakho, mat jhukao')
+  5. Each exercise must include a hinglish_tip field with a short coaching cue in plain English (max 15 words)
   6. Beginners: 3-4 sets, 10-15 reps, compound movements first
   7. Intermediate: 4 sets, 8-12 reps, add isolation work
   8. Advanced: 4-5 sets, 6-12 reps, periodization techniques

@@ -2,9 +2,8 @@
 
 import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Building2, UserRound, Dumbbell } from "lucide-react"
+import { Building2, UserRound } from "lucide-react"
 import { toast } from "sonner"
-import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
 import { GlassCard } from "@/components/ui/glass-card"
 import { GlassInput } from "@/components/ui/glass-input"
@@ -24,8 +23,6 @@ export default function SignupClient() {
   const [password, setPassword] = useState("")
   const [phone, setPhone] = useState("")
   const [city, setCity] = useState("")
-  const [language, setLanguage] = useState("en")
-
   const [age, setAge] = useState("")
   const [bodyWeight, setBodyWeight] = useState("")
   const [height, setHeight] = useState("")
@@ -40,16 +37,16 @@ export default function SignupClient() {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const stepTitle = useMemo(() => {
-    if (step === 1) return "Step 1 — Role"
-    if (step === 2) return "Step 2 — Details"
-    return "Step 3 — Confirm"
+    if (step === 1) return "> SELECT ROLE"
+    if (step === 2) return "> ENTER CREDENTIALS"
+    return "> CONFIRM IDENTITY"
   }, [step])
 
   const validateStep2 = () => {
     const e: Record<string, string> = {}
-    if (fullName.length < 2) e.fullName = "Name zaroori hai"
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Valid email"
-    if (password.length < 8) e.password = "Min 8 chars"
+    if (fullName.length < 2) e.fullName = "Name is required"
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Enter a valid email"
+    if (password.length < 8) e.password = "Minimum 8 characters"
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -143,7 +140,7 @@ export default function SignupClient() {
       height: Number(height) || null,
       goal: fitnessGoal,
       days_per_week: Number(daysPerWeek) || 4,
-      language_preference: language,
+      language_preference: "en",
     })
 
     if (memberError) {
@@ -152,20 +149,15 @@ export default function SignupClient() {
       return
     }
 
-    toast.success("Account ready — ab gym join karo dashboard se")
+    toast.success("Account ready. Join a gym from your dashboard.")
     router.replace("/member/dashboard")
     setLoading(false)
   }
 
   return (
-    <GlassCard className="p-6 sm:p-8">
-      <div className="mb-6 flex items-center gap-2">
-        <Dumbbell className="h-6 w-6 text-cyan-400" />
-        <div>
-          <h1 className="font-heading text-xl font-bold text-white">{stepTitle}</h1>
-          <p className="text-xs text-white/45">IronIQ v2 onboarding</p>
-        </div>
-      </div>
+    <GlassCard className="p-6 sm:p-8 bg-[#0A0A0A]">
+      <h1 className="font-mono text-lg text-[#00FF41]">{stepTitle}</h1>
+      <p className="mb-6 text-xs text-[#888888]">Secure account provisioning sequence</p>
 
       {step === 1 ? (
         <div className="space-y-4">
@@ -174,29 +166,29 @@ export default function SignupClient() {
               type="button"
               className={cn(
                 "rounded-2xl border p-4 text-left transition",
-                role === "member" ? "border-violet-500/50 bg-violet-500/10 glow-purple" : "border-white/10 bg-white/[0.03]"
+                role === "member" ? "border-[#00FF41] bg-[#00FF41]/10" : "border-[#00FF41]/20 bg-black"
               )}
               onClick={() => setRole("member")}
             >
               <UserRound className="mb-2 h-6 w-6 text-violet-300" />
-              <h2 className="font-semibold text-white">Member Hoon</h2>
-              <p className="mt-1 text-xs text-white/45">Free • AI Coach • Progress Tracking</p>
+              <h2 className="font-heading text-white">MEMBER</h2>
+              <p className="mt-1 text-xs text-[#888888]">Free • AI Coach • Progress Tracking</p>
             </button>
             <button
               type="button"
               className={cn(
                 "rounded-2xl border p-4 text-left transition",
-                role === "owner" ? "border-cyan-500/50 bg-cyan-500/10 glow-cyan" : "border-white/10 bg-white/[0.03]"
+                role === "owner" ? "border-[#00FF41] bg-[#00FF41]/10" : "border-[#00FF41]/20 bg-black"
               )}
               onClick={() => setRole("owner")}
             >
               <Building2 className="mb-2 h-6 w-6 text-cyan-300" />
-              <h2 className="font-semibold text-white">Gym Owner Hoon</h2>
+              <h2 className="font-heading text-white">GYM OWNER</h2>
               <p className="mt-1 text-xs text-white/45">₹2,000/mo • Manage Members • Analytics</p>
             </button>
           </div>
           <GradientButton className="w-full" onClick={() => setStep(2)}>
-            Aage Badho
+            NEXT STEP
           </GradientButton>
         </div>
       ) : step === 2 ? (
@@ -218,19 +210,6 @@ export default function SignupClient() {
           />
           <GlassInput label="Phone (+91)" value={phone} onChange={(e) => setPhone(e.target.value)} />
           <GlassInput label="City" value={city} onChange={(e) => setCity(e.target.value)} />
-          <div>
-            <label className="text-sm text-white/55">Language</label>
-            <select
-              className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-            >
-              <option value="en">English</option>
-              <option value="hi">हिंदी</option>
-              <option value="kn">ಕನ್ನಡ</option>
-              <option value="mr">मराठी</option>
-            </select>
-          </div>
 
           {role === "member" ? (
             <>
@@ -276,7 +255,7 @@ export default function SignupClient() {
 
           <div className="flex gap-2 pt-2">
             <GradientButton variant="ghost" className="flex-1" onClick={() => setStep(1)}>
-              Back
+              BACK
             </GradientButton>
             <GradientButton
               className="flex-1"
@@ -284,40 +263,31 @@ export default function SignupClient() {
                 if (validateStep2()) setStep(3)
               }}
             >
-              Next
+              NEXT
             </GradientButton>
           </div>
         </div>
       ) : (
         <div className="space-y-4">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/80">
+          <div className="rounded border border-[#00FF41]/20 bg-black p-4 text-sm text-white/80">
             <p>
               <strong className="text-white">{fullName}</strong> · {email}
             </p>
             <p className="mt-2">
-              {role === "member" ? `Member · ${city} · ${language}` : `Owner · ${gymName} · ${city}`}
+              {role === "member" ? `Member · ${city}` : `Owner · ${gymName} · ${city}`}
             </p>
-            <p className="mt-3 text-white/50">Sab sahi hai?</p>
-          </motion.div>
+            <p className="mt-3 text-white/50">Confirm details before account deployment.</p>
+          </div>
 
           {loading ? (
-            <div className="flex flex-col items-center gap-3 py-8">
-              <motion.div
-                animate={{ scale: [1, 1.08, 1] }}
-                transition={{ repeat: Infinity, duration: 1.2 }}
-                className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-cyan-500"
-              >
-                <Dumbbell className="h-7 w-7 text-white" />
-              </motion.div>
-              <p className="text-sm text-white/55">Creating your account...</p>
-            </div>
+            <p className="py-8 text-center text-sm text-[#888888]">Deploying account...</p>
           ) : (
             <div className="flex gap-2">
               <GradientButton variant="ghost" className="flex-1" onClick={() => setStep(2)}>
-                Edit
+                EDIT
               </GradientButton>
               <GradientButton className="flex-1" onClick={() => void onSubmit()} loading={loading}>
-                Account Banao
+                DEPLOY ACCOUNT
               </GradientButton>
             </div>
           )}

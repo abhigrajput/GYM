@@ -7,19 +7,19 @@ import { Card } from "@/components/ui/card"
 type Goal = "fat_loss" | "muscle_gain" | "strength" | "endurance" | "aesthetics"
 type Level = "beginner" | "intermediate" | "advanced"
 
-const goalOptions: { key: Goal; title: string; hindi: string; icon: string; desc: string }[] = [
-  { key: "fat_loss", title: "Fat Loss", hindi: "Charbi Kam", icon: "🔥", desc: "Calorie burn + lean muscle" },
-  { key: "muscle_gain", title: "Muscle Gain", hindi: "Muscle Banao", icon: "💪", desc: "Progressive overload focus" },
-  { key: "strength", title: "Strength", hindi: "Taaqat", icon: "⚡", desc: "Power and heavy compounds" },
-  { key: "endurance", title: "Endurance", hindi: "Stamina", icon: "🏃", desc: "Longer sessions and capacity" },
-  { key: "aesthetics", title: "Aesthetics", hindi: "Look Better", icon: "✨", desc: "Symmetry and definition" },
+const goalOptions: { key: Goal; title: string; subtitle: string; icon: string; desc: string }[] = [
+  { key: "fat_loss", title: "Fat Loss", subtitle: "Cut", icon: "🔥", desc: "Calorie burn + lean muscle" },
+  { key: "muscle_gain", title: "Muscle Gain", subtitle: "Build", icon: "💪", desc: "Progressive overload focus" },
+  { key: "strength", title: "Strength", subtitle: "Power", icon: "⚡", desc: "Power and heavy compounds" },
+  { key: "endurance", title: "Endurance", subtitle: "Stamina", icon: "🏃", desc: "Longer sessions and capacity" },
+  { key: "aesthetics", title: "Aesthetics", subtitle: "Look Better", icon: "✨", desc: "Symmetry and definition" },
 ]
 
 const generatingMessages = [
-  "Tumhara goal samajh raha hai...",
-  "Gym equipment check kar raha hai...",
-  "Perfect plan bana raha hai...",
-  "Almost ready bhai...",
+  "Analyzing your goal...",
+  "Checking available equipment...",
+  "Building your plan...",
+  "Almost ready...",
 ]
 
 export function PlanGenerator({
@@ -89,7 +89,7 @@ export function PlanGenerator({
   if (step === 5) {
     return (
       <Card className="space-y-4">
-        <h2 className="text-2xl font-bold">Tera plan ready hai! 🎉</h2>
+        <h2 className="text-2xl font-bold">Your plan is ready.</h2>
         <p className="text-[#94A3B8]">{plan?.plan_name}</p>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {dayOverview.map((day: any) => (
@@ -121,9 +121,9 @@ export function PlanGenerator({
           </div>
         ) : null}
         <div className="flex gap-2">
-          <Button>Plan Start Karo</Button>
+          <Button>Start Plan</Button>
           <Button variant="ghost" onClick={() => setStep(1)}>
-            Dobara Generate Karo
+            Generate Again
           </Button>
         </div>
       </Card>
@@ -144,7 +144,7 @@ export function PlanGenerator({
               >
                 <p className="text-xl">{item.icon}</p>
                 <p className="font-semibold">{item.title}</p>
-                <p className="text-xs text-[#94A3B8]">{item.hindi}</p>
+                <p className="text-xs text-[#94A3B8]">{item.subtitle}</p>
                 <p className="mt-1 text-xs text-[#94A3B8]">{item.desc}</p>
               </button>
             ))}
@@ -196,7 +196,7 @@ export function PlanGenerator({
           </div>
           <textarea
             className="min-h-24 w-full rounded-xl border border-[#1A2332] bg-[#0F1520] p-3 text-sm"
-            placeholder="Koi injury hai toh batao — e.g. bad knees, shoulder pain"
+            placeholder="Describe injuries, e.g. bad knees or shoulder pain"
             value={injuries}
             onChange={(e) => setInjuries(e.target.value)}
           />

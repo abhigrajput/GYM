@@ -62,7 +62,7 @@ export function GymFinder({ memberId }: { memberId: string }) {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Join failed")
-      toast.success("Gym join ho gaya!")
+      toast.success("Gym joined successfully.")
       router.refresh()
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Join failed")
@@ -84,7 +84,7 @@ export function GymFinder({ memberId }: { memberId: string }) {
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error || "Update failed")
-      toast.success("Environment set — ab plan banao")
+      toast.success("Environment set. Generate your plan next.")
       router.refresh()
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Update failed")
@@ -116,7 +116,7 @@ export function GymFinder({ memberId }: { memberId: string }) {
       {tab === "search" && (
         <GlassCard className="p-5" glow="purple">
           <GlassInput
-            label="City ya gym name search karo"
+            label="Search city or gym name"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             icon={<Search className="h-4 w-4" />}
@@ -146,7 +146,7 @@ export function GymFinder({ memberId }: { memberId: string }) {
                   </p>
                 </div>
                 <GradientButton size="sm" onClick={() => void joinGym(g.id)} loading={joining}>
-                  Join Karo
+                  Join
                 </GradientButton>
               </div>
             ))}
@@ -164,7 +164,7 @@ export function GymFinder({ memberId }: { memberId: string }) {
             maxLength={8}
           />
           <GradientButton className="mt-4 w-full" onClick={() => void joinGym(undefined, code)} loading={joining}>
-            Code se Join Karo
+            Join with Code
           </GradientButton>
         </GlassCard>
       )}
@@ -173,7 +173,7 @@ export function GymFinder({ memberId }: { memberId: string }) {
         <div className="grid gap-4 md:grid-cols-3">
           {[
             {
-              title: "Ghar pe workout",
+              title: "Train at Home",
               icon: Home,
               env: "home",
               extra: (
@@ -192,12 +192,12 @@ export function GymFinder({ memberId }: { memberId: string }) {
               ),
             },
             {
-              title: "Park mein workout",
+              title: "Train Outdoors",
               icon: Trees,
               env: "outdoor",
             },
             {
-              title: "Abhi skip karo",
+              title: "Skip for Now",
               icon: Building2,
               env: "any",
             },

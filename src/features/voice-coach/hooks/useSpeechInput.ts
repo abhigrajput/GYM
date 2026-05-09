@@ -9,7 +9,7 @@ type ParsedCommand =
 
 function parseTranscript(text: string): ParsedCommand {
   const t = text.toLowerCase()
-  if (t.includes("aaj") && t.includes("skip")) return { action: "skip_day" }
+  if (t.includes("skip day") || t.includes("skip today")) return { action: "skip_day" }
   if (t.includes("next exercise")) return { action: "next" }
   if (t.includes("timer start")) return { action: "start_timer" }
 

@@ -36,12 +36,30 @@ export function Providers({ children }: { children: ReactNode }) {
         .select("*")
         .eq("id", currentUser.id)
         .maybeSingle()
-      setProfile((currentProfile as Profile | null) ?? null)
 
-      if (currentProfile?.role === "admin") {
+      let profileRow = currentProfile as Profile | null
+      if (!profileRow) {
+        const { data: createdProfile } = await supabase
+          .from("profiles")
+          .insert({
+            id: currentUser.id,
+            full_name: currentUser.email?.split("@")[0] || "User",
+            role: "member",
+          })
+          .select("*")
+          .single()
+        profileRow = (createdProfile as Profile | null) ?? {
+          id: currentUser.id,
+          full_name: currentUser.email?.split("@")[0] || "User",
+          role: "member",
+        } as Profile
+      }
+      setProfile(profileRow)
+
+      if (profileRow?.role === "admin") {
         setMember(null)
         setOwnerGymId(null)
-      } else if (currentProfile?.role === "member") {
+      } else if (profileRow?.role === "member") {
         const { data: currentMember } = await supabase
           .from("members")
           .select("*")
@@ -49,7 +67,7 @@ export function Providers({ children }: { children: ReactNode }) {
           .maybeSingle()
         setMember((currentMember as Member | null) ?? null)
         setOwnerGymId(null)
-      } else if (currentProfile?.role === "owner") {
+      } else if (profileRow?.role === "owner") {
         const { data: gym } = await supabase
           .from("gyms")
           .select("id")

@@ -104,7 +104,7 @@ export function GymAnalyticsDashboard({ gymId, initialData }: { gymId: string; i
               return <div key={i} className="h-6 rounded" style={{ background: bg }} />
             })}
           </div>
-          <p className="mt-3 text-sm">Sabse busy time: {peakHourLabel}</p>
+          <p className="mt-3 text-sm">Busiest time: {peakHourLabel}</p>
         </Card>
       ) : null}
 
@@ -118,7 +118,7 @@ export function GymAnalyticsDashboard({ gymId, initialData }: { gymId: string; i
                 <p className="font-semibold">{c.equipment_name}</p>
               </div>
               <p className="text-sm text-[#94A3B8]">{c.time_slot} — {c.members_wanting.length} members scheduled, only {c.equipment_quantity} available</p>
-              <Button className="mt-2" variant="outline">Members shift karo</Button>
+              <Button className="mt-2" variant="outline">Shift Members</Button>
             </div>
           ))}
           <div className="space-y-1 text-sm text-[#94A3B8]">
@@ -147,11 +147,11 @@ export function GymAnalyticsDashboard({ gymId, initialData }: { gymId: string; i
                   window.open(d.waUrl, "_blank")
                 }}
               >
-                WhatsApp bhejo
+                Send WhatsApp
               </Button>
             </div>
           ))}
-          <Button>Sabko message bhejo</Button>
+          <Button>Message All</Button>
         </Card>
       ) : null}
     </div>

@@ -25,7 +25,7 @@ export default async function JoinGymPage({ params }: { params: { code: string }
       <main className="mesh-bg flex min-h-screen items-center justify-center p-4">
         <GlassCard className="max-w-md p-8 text-center">
           <h1 className="font-heading text-xl font-bold">Code invalid</h1>
-          <p className="mt-2 text-sm text-white/55">Gym nahi mila. Dubara try karo.</p>
+          <p className="mt-2 text-sm text-white/55">Gym not found. Please try again.</p>
           <Link href="/signup" className="mt-6 inline-block">
             <GradientButton>Signup</GradientButton>
           </Link>

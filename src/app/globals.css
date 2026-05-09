@@ -1,2 +1,148 @@
-@import "../styles/design-system.css";
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
+
+:root {
+  --black: #000000;
+  --black-90: #0a0a0a;
+  --black-80: #111111;
+  --black-70: #1a1a1a;
+  --black-60: #222222;
+  --neon: #00FF41;
+  --neon-dim: #00CC33;
+  --neon-glow: rgba(0, 255, 65, 0.4);
+  --neon-subtle: rgba(0, 255, 65, 0.1);
+  --neon-border: rgba(0, 255, 65, 0.3);
+  --white: #FFFFFF;
+  --gray: #888888;
+  --gray-dim: #444444;
+  --danger: #FF0040;
+  --warning: #FFB800;
+  --success: #00FF41;
+  --cyber-border: 1px solid rgba(0, 255, 65, 0.2);
+  --cyber-glow: 0 0 20px rgba(0, 255, 65, 0.3);
+  --cyber-glow-strong: 0 0 40px rgba(0, 255, 65, 0.5);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--black);
+  color: var(--white);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Orbitron', monospace;
+  letter-spacing: 0.05em;
+}
+
+code, .mono, .code {
+  font-family: 'Share Tech Mono', monospace;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--neon-dim); }
+
+.neon-text {
+  color: var(--neon);
+  text-shadow: 0 0 10px var(--neon), 0 0 20px var(--neon), 0 0 40px var(--neon);
+}
+
+.cyber-card {
+  background: var(--black-80);
+  border: var(--cyber-border);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon), transparent);
+}
+
+.cyber-btn {
+  background: transparent;
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+
+.cyber-btn:hover {
+  background: var(--neon);
+  color: var(--black);
+  box-shadow: var(--cyber-glow);
+}
+
+.cyber-btn-filled {
+  background: var(--neon);
+  color: var(--black);
+  font-weight: 700;
+  box-shadow: var(--cyber-glow);
+}
+
+.cyber-btn-filled:hover {
+  box-shadow: var(--cyber-glow-strong);
+  transform: translateY(-1px);
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.scanline {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: rgba(0, 255, 65, 0.1);
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.neon-flicker { animation: flicker 3s ease-in-out infinite; }
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(0,255,65,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,65,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.cyber-corners {
+  position: relative;
+}
+.cyber-corners::before, .cyber-corners::after {
+  content: '';
+  position: absolute;
+  width: 12px; height: 12px;
+  border-color: var(--neon);
+  border-style: solid;
+}
+.cyber-corners::before {
+  top: -1px; left: -1px;
+  border-width: 2px 0 0 2px;
+}
+.cyber-corners::after {
+  bottom: -1px; right: -1px;
+  border-width: 0 2px 2px 0;
+}

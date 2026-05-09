@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Toaster } from "sonner"
 import { Providers } from "@/components/providers"
 import { OfflineBanner } from "@/features/offline/components/OfflineBanner"
+import { Scanline } from "@/components/effects/Scanline"
 import "./globals.css"
 
 export const dynamic = "force-dynamic"
@@ -35,7 +36,8 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </head>
-      <body className="mesh-bg min-h-full antialiased">
+      <body className="min-h-full antialiased bg-black text-white">
+        <Scanline />
         <OfflineBanner />
         <Providers>{children}</Providers>
         <Toaster theme="dark" richColors position="top-right" />

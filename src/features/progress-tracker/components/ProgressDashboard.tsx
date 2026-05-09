@@ -93,7 +93,7 @@ export function ProgressDashboard({ memberId, goal, measurements: initialMeasure
       {tab === "body" ? (
         <Card className="space-y-4">
           <Button variant="outline" onClick={() => setFormOpen((v) => !v)}>
-            {formOpen ? "Form Hide Karo" : "Measurement Form Khollo"}
+            {formOpen ? "Hide Form" : "Open Measurement Form"}
           </Button>
           {formOpen ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -102,7 +102,7 @@ export function ProgressDashboard({ memberId, goal, measurements: initialMeasure
               <Input label="Waist (cm)" value={form.waist} onChange={(e) => setForm((f) => ({ ...f, waist: e.target.value }))} />
               <Input label="Arms (cm)" value={form.arms} onChange={(e) => setForm((f) => ({ ...f, arms: e.target.value }))} />
               <Input label="Height (cm)" value={form.height} onChange={(e) => setForm((f) => ({ ...f, height: e.target.value }))} />
-              <Button onClick={saveMeasurement}>Aaj Ka Measurement Save Karo</Button>
+              <Button onClick={saveMeasurement}>Save Today&apos;s Measurement</Button>
             </div>
           ) : null}
 

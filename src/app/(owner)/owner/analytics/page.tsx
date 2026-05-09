@@ -9,7 +9,7 @@ const GymAnalyticsDashboard = dyn(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-64 items-center justify-center text-text-muted">Load ho raha hai...</div>
+      <div className="flex h-64 items-center justify-center text-text-muted">Loading...</div>
     ),
   }
 )

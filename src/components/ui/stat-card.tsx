@@ -24,27 +24,23 @@ export function StatCard({
   prefix,
   suffix,
 }: StatCardProps) {
+  const displayChange =
+    changeType === "up" ? "text-[#00FF41]" : changeType === "down" ? "text-[#FF0040]" : "text-[#888888]"
+
   return (
-    <GlassCard glow={glow} className="p-5">
+    <GlassCard glow={glow} className="p-5 bg-[#0A0A0A]">
       <div className="flex items-start justify-between mb-3">
-        <p className="text-xs font-medium text-white/50 uppercase tracking-wider">{title}</p>
-        {icon && <div className="text-white/30">{icon}</div>}
+        <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#888888]">{title}</p>
+        {icon && <div className="text-[#00FF41]/60">{icon}</div>}
       </div>
       <div className="flex items-end gap-2">
-        <p className="text-2xl font-bold font-heading text-white">
+        <p className="font-heading text-3xl font-bold text-[#00FF41]">
           {prefix}
           {value}
           {suffix}
         </p>
         {change && (
-          <span
-            className={cn(
-              "text-xs font-medium mb-1",
-              changeType === "up" && "text-emerald-400",
-              changeType === "down" && "text-red-400",
-              changeType === "neutral" && "text-white/40"
-            )}
-          >
+          <span className={cn("mb-1 text-xs font-medium", displayChange)}>
             {change}
           </span>
         )}

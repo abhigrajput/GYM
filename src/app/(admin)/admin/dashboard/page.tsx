@@ -59,39 +59,41 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="space-y-10 p-4 sm:p-8">
+    <div className="space-y-10 bg-black p-4 sm:p-8">
       <div>
-        <h1 className="font-heading text-3xl font-bold">Platform Overview</h1>
-        <p className="text-white/50">IronIQ v2 admin</p>
+        <h1 className="font-heading text-3xl font-bold text-[#00FF41]">ADMIN OVERVIEW</h1>
+        <p className="font-mono text-xs text-[#888888]">Real-time platform telemetry</p>
       </div>
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard title="Total users" value={Number(stats?.totalUsers ?? 0)} glow="purple" />
-        <StatCard title="Total gyms" value={Number(stats?.totalGyms ?? 0)} glow="cyan" />
-        <StatCard title="AI calls today" value={Number(stats?.aiCallsToday ?? 0)} glow="pink" />
-        <StatCard title="Est. API cost (₹)" value={Number(stats?.estimatedCostTodayINR ?? 0)} glow="purple" />
-        <StatCard title="MRR (₹)" value={Number(stats?.monthlyRevenueINR ?? 0) > 0 ? Number(stats?.monthlyRevenueINR ?? 0) : "No data yet"} glow="cyan" />
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <StatCard title="TOTAL USERS" value={Number(stats?.totalUsers ?? 0)} />
+        <StatCard title="ACTIVE GYMS" value={Number(stats?.totalGyms ?? 0)} />
+        <StatCard title="AI CALLS TODAY" value={Number(stats?.aiCallsToday ?? 0)} />
+        <StatCard title="API COST TODAY ₹" value={Number(stats?.estimatedCostTodayINR ?? 0)} />
+        <StatCard title="MRR ₹" value={Number(stats?.monthlyRevenueINR ?? 0) > 0 ? Number(stats?.monthlyRevenueINR ?? 0) : "No data yet"} />
+      </section>
+
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
         <StatCard
-          title="MoM growth"
+          title="MOM GROWTH"
           value={
             typeof stats?.momGrowthPercent === "number"
               ? `${stats.momGrowthPercent}%`
               : "No data yet"
           }
-          glow="pink"
         />
       </section>
 
       <GlassCard id="users" className="scroll-mt-24 p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-heading text-xl font-semibold">Users</h2>
-          <GradientButton size="sm" variant="secondary" onClick={exportCsv}>
+          <h2 className="font-heading text-xl font-semibold text-[#00FF41]">&gt; USERS</h2>
+          <GradientButton size="sm" variant="outline" onClick={exportCsv}>
             Export CSV
           </GradientButton>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="text-white/45">
+          <table className="w-full min-w-[640px] text-left text-sm font-mono">
+            <thead className="text-[#00FF41]">
               <tr>
                 <th className="pb-2">Name</th>
                 <th>Phone</th>
@@ -101,7 +103,7 @@ export default function AdminDashboardPage() {
             </thead>
             <tbody>
               {users.slice(0, 40).map((u: Record<string, unknown>) => (
-                <tr key={String(u.id)} className="border-t border-white/10">
+                <tr key={String(u.id)} className="border-t border-[#00FF41]/20 odd:bg-[#111111]">
                   <td className="py-2">{String(u.full_name || "—")}</td>
                   <td>{String(u.phone || "—")}</td>
                   <td>{String(u.role || "")}</td>
@@ -114,10 +116,10 @@ export default function AdminDashboardPage() {
       </GlassCard>
 
       <GlassCard id="gyms" className="scroll-mt-24 p-6">
-        <h2 className="font-heading mb-4 text-xl font-semibold">Gyms</h2>
+        <h2 className="font-heading mb-4 text-xl font-semibold text-[#00FF41]">&gt; GYMS</h2>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left text-sm">
-            <thead className="text-white/45">
+          <table className="w-full min-w-[720px] text-left text-sm font-mono">
+            <thead className="text-[#00FF41]">
               <tr>
                 <th className="pb-2">Name</th>
                 <th>City</th>
@@ -129,7 +131,7 @@ export default function AdminDashboardPage() {
             </thead>
             <tbody>
               {gyms.slice(0, 40).map((g: Record<string, unknown>) => (
-                <tr key={String(g.id)} className="border-t border-white/10">
+                <tr key={String(g.id)} className="border-t border-[#00FF41]/20 odd:bg-[#111111]">
                   <td className="py-2">{String(g.name)}</td>
                   <td>{String(g.city)}</td>
                   <td>{String(g.owner_name)}</td>
@@ -149,12 +151,12 @@ export default function AdminDashboardPage() {
 
       <section id="ai" className="scroll-mt-24 grid gap-4 md:grid-cols-2">
         <GlassCard className="p-6">
-          <h2 className="font-heading text-lg font-semibold">AI Usage</h2>
-          <p className="mt-2 text-sm text-white/55">Calls per feature roll up from `ai_usage_logs` once populated.</p>
+          <h2 className="font-heading text-lg font-semibold text-[#00FF41]">&gt; AI USAGE</h2>
+          <p className="mt-2 text-sm text-[#888888]">Calls per feature roll up from ai_usage_logs once populated.</p>
         </GlassCard>
         <GlassCard id="revenue" className="scroll-mt-24 p-6">
-          <h2 className="font-heading text-lg font-semibold">Revenue</h2>
-          <p className="mt-2 text-sm text-white/55">MRR from subscriptions table + Razorpay webhooks.</p>
+          <h2 className="font-heading text-lg font-semibold text-[#00FF41]">&gt; REVENUE</h2>
+          <p className="mt-2 text-sm text-[#888888]">MRR from subscriptions table and Razorpay webhooks.</p>
         </GlassCard>
       </section>
     </div>

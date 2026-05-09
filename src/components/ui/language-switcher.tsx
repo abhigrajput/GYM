@@ -5,9 +5,6 @@ import type { Lang } from "@/lib/i18n/translations"
 
 const options: { code: Lang; label: string }[] = [
   { code: "en", label: "EN" },
-  { code: "hi", label: "हि" },
-  { code: "kn", label: "ಕ" },
-  { code: "mr", label: "म" },
 ]
 
 interface LanguageSwitcherProps {

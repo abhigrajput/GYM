@@ -17,7 +17,7 @@ export default function TermsPage() {
         </section>
         <section>
           <h2 className="text-xl font-semibold">Disclaimer</h2>
-          <p className="text-sm text-[#94A3B8]">IronIQ ke workout plans medical advice nahi hain. Kisi bhi injury ke liye doctor se milein.</p>
+          <p className="text-sm text-[#94A3B8]">IronIQ workout plans are not medical advice. Consult a doctor for injuries.</p>
         </section>
       </div>
     </main>

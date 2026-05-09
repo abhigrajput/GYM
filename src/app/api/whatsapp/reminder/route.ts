@@ -13,11 +13,11 @@ export async function POST(request: Request) {
     let message = ""
 
     if (type === "welcome_message") {
-      message = `Swagat hai bhai! ${sanitizeText(name)} IronIQ gym mein join ho gaye. Aapka plan ready hai: ${sanitizeText(link)}`
+      message = `Welcome ${sanitizeText(name)}. You are now active on IronIQ. Your dashboard is ready: ${sanitizeText(link)}`
     } else if (type === "renewal_reminder") {
-      message = `Bhai ${sanitizeText(name)}, aapki membership ${sanitizeText(date)} ko expire ho rahi hai. Renew karo: ${sanitizeText(link)}`
+      message = `${sanitizeText(name)}, your membership expires on ${sanitizeText(date)}. Renew now: ${sanitizeText(link)}`
     } else if (type === "dropout_reengagement") {
-      message = `Bhai ${sanitizeText(name)}, ${sanitizeNumber(days) || 0} din se gym nahi aaye. Aaj wapas aao 💪 Tumhara plan wait kar raha hai!`
+      message = `${sanitizeText(name)}, you have been inactive for ${sanitizeNumber(days) || 0} days. Return today. Your plan is waiting.`
     } else {
       return secureJson({ error: "Invalid reminder type" }, { status: 400 })
     }

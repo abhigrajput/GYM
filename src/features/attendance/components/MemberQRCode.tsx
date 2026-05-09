@@ -33,7 +33,7 @@ export function MemberQRCode({
 
   return (
     <Card className="space-y-3 text-center">
-      <p className="text-sm text-[#94A3B8]">Show karo gym owner ko</p>
+      <p className="text-sm text-[#94A3B8]">Show this to the gym owner</p>
       {image ? (
         <Image
           src={image}

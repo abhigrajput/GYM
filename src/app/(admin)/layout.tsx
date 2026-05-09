@@ -6,11 +6,11 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 
 const nav = [
-  { href: "/admin/dashboard", label: "Overview", emoji: "📊" },
-  { href: "/admin/dashboard#users", label: "All Users", emoji: "👥" },
-  { href: "/admin/dashboard#gyms", label: "All Gyms", emoji: "🏋️" },
-  { href: "/admin/dashboard#ai", label: "AI Usage", emoji: "🤖" },
-  { href: "/admin/dashboard#revenue", label: "Revenue", emoji: "💰" },
+  { href: "/admin/dashboard", label: "> OVERVIEW", emoji: "📊" },
+  { href: "/admin/dashboard#users", label: "> USERS", emoji: "👥" },
+  { href: "/admin/dashboard#gyms", label: "> GYMS", emoji: "🏋️" },
+  { href: "/admin/dashboard#ai", label: "> AI USAGE", emoji: "🤖" },
+  { href: "/admin/dashboard#revenue", label: "> REVENUE", emoji: "💰" },
 ]
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
@@ -24,9 +24,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   if (profile?.role !== "admin") redirect("/member/dashboard")
 
   return (
-    <div className="mesh-bg flex min-h-screen text-white">
-      <aside className="hidden w-56 shrink-0 border-r border-white/10 bg-black/30 p-4 backdrop-blur-xl md:block">
-        <Link href="/admin/dashboard" className="block bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text font-heading text-xl font-bold text-transparent">
+    <div className="flex min-h-screen bg-black text-white">
+      <aside className="hidden w-56 shrink-0 border-r border-[#00FF41]/30 bg-[#070707] p-4 md:block">
+        <Link href="/admin/dashboard" className="block font-heading text-xl font-bold text-[#00FF41]">
           IronIQ Admin
         </Link>
         <nav className="mt-8 space-y-1">
@@ -34,7 +34,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/70 hover:bg-white/[0.06] hover:text-white"
+              className="flex items-center gap-2 rounded-sm px-3 py-2 text-sm text-[#888888] hover:bg-[#00FF41]/10 hover:text-[#00FF41]"
             >
               <span>{item.emoji}</span>
               {item.label}

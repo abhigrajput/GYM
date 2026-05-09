@@ -9,9 +9,9 @@ import { Input } from "@/components/ui/input"
 import { ManualEquipmentForm, type EquipmentDraft } from "./ManualEquipmentForm"
 
 const scanningMessages = [
-  "Equipment dhundh raha hai...",
-  "Machines identify kar raha hai...",
-  "Plan ke liye data prepare ho raha hai...",
+  "Scanning equipment...",
+  "Identifying machines...",
+  "Preparing plan-ready data...",
 ]
 
 export function EquipmentScanner({
@@ -116,7 +116,7 @@ export function EquipmentScanner({
             />
           ) : null}
         </div>
-        <p className="text-lg font-semibold">AI scan kar raha hai...</p>
+        <p className="text-lg font-semibold">AI is scanning...</p>
         <p className="text-sm text-[#94A3B8]">{scanningMessages[msgIndex]}</p>
         <div className="h-2 w-full overflow-hidden rounded-full bg-[#1A2332]">
           <div className="h-2 w-1/2 animate-pulse rounded-full bg-[#0ECFB0]" />
@@ -130,7 +130,7 @@ export function EquipmentScanner({
       <Card className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Results</h3>
-          <p className="text-sm text-[#94A3B8]">{items.length} equipment milaa</p>
+          <p className="text-sm text-[#94A3B8]">{items.length} equipment detected</p>
         </div>
         {Object.entries(grouped).map(([category, list]) => (
           <div key={category} className="space-y-2">
@@ -190,7 +190,7 @@ export function EquipmentScanner({
         </Button>
         {manualOpen ? <ManualEquipmentForm items={items} onChange={setItems} /> : null}
         <Button onClick={save} disabled={saving}>
-          {saving ? "Saving..." : "Yeh sab sahi hai — Save Karo"}
+          {saving ? "Saving..." : "Confirm Details — Save"}
         </Button>
       </Card>
     )
@@ -203,8 +203,8 @@ export function EquipmentScanner({
         onDragOver={(e) => e.preventDefault()}
       >
         <Camera className="mb-3 h-8 w-8 text-[#0ECFB0]" />
-        <p className="font-semibold">Gym ki photo upload karo</p>
-        <p className="mt-1 text-sm text-[#94A3B8]">AI automatically identify karega sabhi equipment</p>
+        <p className="font-semibold">Upload a gym photo</p>
+        <p className="mt-1 text-sm text-[#94A3B8]">AI will automatically identify visible equipment</p>
         <input
           type="file"
           className="hidden"
@@ -225,10 +225,10 @@ export function EquipmentScanner({
       {scanError ? <p className="text-sm text-[#EF4444]">{scanError}</p> : null}
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" onClick={() => setManualOpen((v) => !v)}>
-          Manually add karein
+          Add manually
         </Button>
         <Button onClick={scan} disabled={!file}>
-          Scan Karo
+          Scan
         </Button>
       </div>
       {manualOpen ? <ManualEquipmentForm items={items} onChange={setItems} /> : null}

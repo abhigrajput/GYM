@@ -1,12 +1,11 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { motion } from "framer-motion"
 
 interface GradientButtonProps {
   children: React.ReactNode
   className?: string
-  variant?: "primary" | "secondary" | "ghost" | "danger"
+  variant?: "primary" | "outline" | "ghost" | "danger" | "secondary"
   size?: "sm" | "md" | "lg"
   loading?: boolean
   disabled?: boolean
@@ -24,24 +23,23 @@ export function GradientButton({
   onClick,
   type = "button",
 }: GradientButtonProps) {
-  const sizes = { sm: "px-4 py-2 text-sm", md: "px-6 py-3 text-sm", lg: "px-8 py-4 text-base" }
+  const sizes = { sm: "px-4 py-2 text-xs", md: "px-6 py-3 text-sm", lg: "px-8 py-4 text-base" }
   const variants = {
-    primary:
-      "bg-gradient-to-r from-violet-600 to-cyan-500 text-white hover:opacity-90 shadow-[0_0_20px_rgba(124,58,237,0.4)]",
-    secondary: "bg-white/5 border border-white/10 text-white hover:bg-white/10",
-    ghost: "text-white/70 hover:text-white hover:bg-white/5",
-    danger: "bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30",
+    primary: "border border-[#00FF41] bg-[#00FF41] text-black shadow-[0_0_20px_rgba(0,255,65,0.3)] hover:shadow-[0_0_40px_rgba(0,255,65,0.5)]",
+    outline: "border border-[#00FF41] bg-transparent text-[#00FF41] hover:bg-[#00FF41] hover:text-black hover:shadow-[0_0_20px_rgba(0,255,65,0.3)]",
+    secondary: "border border-[#00FF41] bg-transparent text-[#00FF41] hover:bg-[#00FF41] hover:text-black hover:shadow-[0_0_20px_rgba(0,255,65,0.3)]",
+    ghost: "border-transparent bg-transparent text-[#888888] hover:text-[#00FF41]",
+    danger: "border border-[#FF0040] bg-transparent text-[#FF0040] hover:bg-[#FF0040] hover:text-black",
   }
 
   return (
-    <motion.button
-      whileHover={{ scale: disabled ? 1 : 1.02 }}
-      whileTap={{ scale: disabled ? 1 : 0.98 }}
+    <button
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
       className={cn(
-        "relative rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 justify-center",
+        "relative flex items-center justify-center gap-2 rounded-sm font-heading uppercase tracking-[0.1em] transition-all duration-200",
+        "[clip-path:polygon(8px_0%,100%_0%,calc(100%-8px)_100%,0%_100%)]",
         sizes[size],
         variants[variant],
         (disabled || loading) && "opacity-50 cursor-not-allowed",
@@ -49,9 +47,9 @@ export function GradientButton({
       )}
     >
       {loading && (
-        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+        <div className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />
       )}
       {children}
-    </motion.button>
+    </button>
   )
 }

@@ -50,7 +50,7 @@ export function Leaderboard({
       <Card>
         <p className="text-sm">Weekly reset in: {6 - new Date().getDay()} days</p>
         {me ? <p className="mt-1 text-sm text-[#0ECFB0]">Your rank: #{me.rank}</p> : null}
-        <Button className="mt-3" onClick={share}>Apna rank share karo</Button>
+        <Button className="mt-3" onClick={share}>Share my rank</Button>
       </Card>
     </div>
   )

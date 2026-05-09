@@ -84,7 +84,7 @@ export default function OwnerMembersClient() {
         <h1 className="text-2xl font-bold">
           Members <span className="rounded-full bg-[#1A2332] px-2 py-1 text-sm">{filtered.length}</span>
         </h1>
-        <Button onClick={() => setShowAdd(true)}>Naya Member Jodo</Button>
+        <Button onClick={() => setShowAdd(true)}>Add Member</Button>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -178,7 +178,7 @@ export default function OwnerMembersClient() {
       {showAdd ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <Card className="w-full max-w-xl space-y-3">
-            <h3 className="text-lg font-semibold">Naya Member Jodo</h3>
+            <h3 className="text-lg font-semibold">Add Member</h3>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Input label="Full Name" value={form.fullName} onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))} />
               <Input label="Phone (+91)" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} />
@@ -231,7 +231,7 @@ export default function OwnerMembersClient() {
               window.open(data.waUrl, "_blank")
             }}
           >
-            Renewal Bhejo
+            Send Renewal
           </Button>
         </div>
       ) : null}
